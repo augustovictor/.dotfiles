@@ -1,0 +1,19 @@
+{
+  "configurations": {
+    "run": {
+      "adapter": "debugpy",
+      "filetypes": [ "python" ],
+      "configuration": {
+        "name": "run",
+        "type": "python",
+        "request": "launch",
+        "cwd": "$(pwd)",
+        "python": "/Users/victor.costa/.asdf/shims/python",
+        "stopOnEntry": true,
+        "console": "externalTerminal",
+        "debugOptions": [],
+        "program": "<path to main python file>"
+      }
+    }
+  }
+}
