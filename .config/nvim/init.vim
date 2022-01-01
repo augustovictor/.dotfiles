@@ -117,6 +117,9 @@ Plug 'lilydjwg/colorizer'
 " Pytest
 Plug 'alfredodeza/pytest.vim'
 
+" Linediff
+Plug 'AndrewRadev/linediff.vim'
+
 call plug#end()
 
 " General
@@ -194,7 +197,7 @@ nnoremap <expr> j (v:count > 5 ? "m'" . v:count : "") . 'j'
 colorscheme darcula
 set background=dark
 " colorscheme nord
-let g:airline_theme='atomic'
+let g:airline_theme='molokai'
 set background=dark
 set termguicolors
 
@@ -202,7 +205,7 @@ set termguicolors
 " NERDTree
 nnoremap <nowait> <leader>a :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
-" nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-a> :NERDTreeFocus<CR>
 " nnoremap <C-n> :NERDTree<CR>
 let NERDTreeShowHidden=1
 
@@ -216,9 +219,12 @@ nnoremap <leader>ch :cprev<CR>
 nnoremap <leader>cl :cnext<CR>
 
 " Vim fugitive
+nnoremap <leader>gs :G<CR>
+nnoremap <leader>ga :Git add %<CR>
+nnoremap <leader>gdi :Git diff<CR>
+nnoremap <leader>gc :Git commit<CR>i
 nmap <leader>gl :diffget //3<CR>
 nmap <leader>gh :diffget //2<CR>
-nmap <leader>gs :G<CR>
 
 
 " COC mappings
@@ -339,10 +345,17 @@ endfunction
 nnoremap <C-t> :call OpenLastClosed() <CR>
 
 " Pytest
-nmap <silent><Leader>pt <Esc>:Pytest file<CR>
-nmap <silent><Leader>c <Esc>:Pytest class<CR>
-nmap <silent><Leader>m <Esc>:Pytest method<CR>
+nmap <silent><leader>pt <Esc>:Pytest file<CR>
+nmap <silent><leader>ps <Esc>:Pytest session<CR><C-w>p
+nmap <silent><leader>c <Esc>:Pytest class<CR>
+nmap <silent><leader>m <Esc>:Pytest method<CR>
+nmap <silent><leader>m <Esc>:Pytest method<CR>
 
+" Linediff
+vnorema da :LinediffAdd<CR>
+nnoremap <leader>df :LinediffShow<CR>:windo set wrap<CR>
+nnoremap <leader>dq :LinediffReset<CR>
+" inoremap <C-p> <C-\><C-O>:call CocActionAsync('showSignatureHelp')<CR>
 
 " -----------------------------------------------------------------------------------
 " After a quick list result, press enter and navigate quick list items with
@@ -359,3 +372,4 @@ nmap <silent><Leader>m <Esc>:Pytest method<CR>
 
 " To jump to next open curly braces: ]m
 " New tab: 
+" Check characters sent to terminal with: sed -n l
