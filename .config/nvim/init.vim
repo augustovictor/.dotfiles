@@ -28,7 +28,7 @@ set expandtab
 set autoindent
 set fileformat=unix
 "set clipboard=unnamed
-" set splitbelow
+set splitbelow
 
 call plug#begin('~/.vim/plugged')
 
@@ -117,21 +117,27 @@ Plug 'lilydjwg/colorizer'
 " Pytest
 Plug 'alfredodeza/pytest.vim'
 
+" Linediff
+Plug 'AndrewRadev/linediff.vim'
+
 call plug#end()
 
 " General
 let mapleader = " "
 imap kj <Esc>
 tnoremap kj <C-\><C-n>
-tnoremap kjq <C-\><C-n> :FloatermToggle<CR>
 nnoremap <leader>q :q<CR>
-nnoremap <leader>w :w<CR>
+nnoremap <leader>w :wa<CR>
+nnoremap <S-R> :e<CR>
 " nnoremap <leader>wa :wa<CR>
 
 " Automatically enter insert mode when opening terminal
 augroup terminal
   au TermOpen * startinsert
 augroup end 
+
+" Save session on new buffers
+au BufNew,BufDelete * :mksession!<CR>
 
 " Automatically enable gitblame
 let g:blamer_enabled = 1
@@ -147,7 +153,7 @@ set statusline+=%{ObsessionStatus()}
 " Split management
 " nnoremap ;j mz:new<CR>:b#<CR>`z:delm z<CR>
 nnoremap <leader>sj :belowright split<CR>
-nnoremap <leader>sk :split<CR>
+nnoremap <leader>sk :split<CR><C-w>k
 nnoremap <leader>sl :vsplit<CR><C-w>l
 nnoremap <leader>sh :vsplit<CR>
 " Split navigation
@@ -155,6 +161,11 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+" Resize splits
+" nnoremap <M-S-k> :res-5<CR>
+" nnoremap <M-S-j> :res+5<CR>
+" nnoremap <M-S-l> :res+5<CR>
+" nnoremap <M-S-h> :res-5<CR>
 
 " Open terminal
 nnoremap <leader><F12> :belowright split<CR>:resize 15<CR>:term<CR>
@@ -171,8 +182,7 @@ nnoremap Y y$
 nnoremap n nzzzv
 nnoremap N Nzzzv
 " Keep cursor at same place when joining lines
-nnoremap J mzJ`z
-" Add specific keys to undolist when in insertmode
+nnoremap J mzJ`zmz " Add specific keys to undolist when in insertmode
 inoremap , ,<c-g>u
 inoremap . .<c-g>u
 inoremap ! !<c-g>u
@@ -194,7 +204,7 @@ nnoremap <expr> j (v:count > 5 ? "m'" . v:count : "") . 'j'
 colorscheme darcula
 set background=dark
 " colorscheme nord
-let g:airline_theme='atomic'
+let g:airline_theme='molokai'
 set background=dark
 set termguicolors
 
@@ -202,10 +212,12 @@ set termguicolors
 " NERDTree
 nnoremap <nowait> <leader>a :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
-" nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-a> :NERDTreeFocus<CR>
 " nnoremap <C-n> :NERDTree<CR>
 let NERDTreeShowHidden=1
-
+let NERDTreeMapOpenSplit='<C-j>'
+let NERDTreeMapOpenSplit='<C-j>'
+let NERDTreeMapOpenVSplit='<C-h>'
 
 " FuzzyFinderS
 " nnoremap <C-p> :GFiles<CR>
@@ -216,9 +228,14 @@ nnoremap <leader>ch :cprev<CR>
 nnoremap <leader>cl :cnext<CR>
 
 " Vim fugitive
+nnoremap <leader>gs :G<CR>
+nnoremap <leader>ga :Git add %<CR>
+" nnoremap <leader>gdi :Git diff<CR> " Better done with telescope
+nnoremap <leader>gc :Git commit<CR>
+nnoremap <leader>zzz :Git stash<CR>
+nnoremap <leader>zza :Git stash pop<CR>
 nmap <leader>gl :diffget //3<CR>
 nmap <leader>gh :diffget //2<CR>
-nmap <leader>gs :G<CR>
 
 
 " COC mappings
@@ -258,7 +275,6 @@ nmap <leader>ca  <Plug>(coc-codeaction)
 nmap <leader>cf  <Plug>(coc-fix-current)
 
 " Code formatting
-nnoremap <F3> :Autoformat<CR>
 let g:autoformat_autoindent = 0
 let g:autoformat_retab = 0
 let g:autoformat_remove_trailing_spaces = 0
@@ -275,9 +291,12 @@ noremap <A-S-Right> :+tabmove<cr>
 " Find files using Telescope command-line sugar.
 nnoremap <C-p> <cmd>Telescope find_files<CR>
 nnoremap <leader>fzf <cmd>Telescope live_grep<CR>
+nnoremap <leader>fz. <cmd>Telescope current_buffer_fuzzy_find<CR>
 nnoremap <leader>fb <cmd>Telescope buffers<CR>
 nnoremap <leader>fh <cmd>Telescope help_tags<CR>
-nnoremap <leader>gd <cmd>Telescope git_status<CR>
+nnoremap <leader>kb <cmd>Telescope keymaps<CR>
+nnoremap <C-e> <cmd>Telescope oldfiles<CR>
+" nnoremap <leader>gd <cmd>Telescope git_status<CR>
 
 " Telescope extension remapings
 " GoTo code navigation.
@@ -287,6 +306,11 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 " nmap <silent> gr <Plug>(coc-references)
 nmap <silent> gr :Telescope coc references<CR>
+
+" Code highlighting
+augroup HighlightUnderCursor
+  autocmd! CursorMoved * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+augroup END
 
 " VirtualEnvs
 let g:virtualenv_directory = '/Users/victor.costa/Library/Caches/pypoetry/virtualenvs'
@@ -312,7 +336,8 @@ nnoremap <leader>dq :call vimspector#Reset()<CR>
 noremap <silent> <F4> :let @+=expand("%:p")<CR>
 
 " FloatTerm
-nnoremap <silent> <nowait> <leader>t :FloatermToggle<CR>
+tnoremap kjq <C-\><C-n> :FloatermToggle<CR>
+nnoremap <silent> <leader>t :FloatermToggle<CR>
 
 " open last closed buffer
 function! OpenLastClosed()
@@ -339,11 +364,24 @@ endfunction
 nnoremap <C-t> :call OpenLastClosed() <CR>
 
 " Pytest
-nmap <silent><Leader>pt <Esc>:Pytest file<CR>
-nmap <silent><Leader>c <Esc>:Pytest class<CR>
-nmap <silent><Leader>m <Esc>:Pytest method<CR>
+nmap <silent><leader>pt <Esc>:Pytest file<CR>
+nmap <silent><leader>ps <Esc>:Pytest session<CR><C-w>p
+nmap <silent><leader>c <Esc>:Pytest class<CR>
+nmap <silent><leader>m <Esc>:Pytest method<CR>
+nmap <silent><leader>m <Esc>:Pytest method<CR>
 
+" Linediff
+augroup DisableMappings
+  autocmd! VimEnter * :nunmap <leader>tc
+augroup END
+vnoremap <leader>da :LinediffAdd<CR>
+nnoremap <leader>df :LinediffShow<CR>:windo set wrap<CR>
+nnoremap <leader>dq :LinediffReset<CR>
+" inoremap <C-p> <C-\><C-O>:call CocActionAsync('showSignatureHelp')<CR>
 
+" Search dotfiles
+" Not working yet
+" nnoremap <leader>vrc :lua require('telescope').search_dot_files()<CR>
 " -----------------------------------------------------------------------------------
 " After a quick list result, press enter and navigate quick list items with
 " above remaps.
@@ -359,3 +397,11 @@ nmap <silent><Leader>m <Esc>:Pytest method<CR>
 
 " To jump to next open curly braces: ]m
 " New tab: 
+" Check characters sent to terminal with: sed -n l
+"
+"
+"
+" Overwrite lua plugin mapings
+" 1. Find the extension and function to overwrite
+" 2. Write the remap
+" 
