@@ -1,6 +1,7 @@
 set encoding=utf-8
 set number relativenumber
 set noswapfile
+set mouse+=a
 set scrolloff=9
 set backspace=indent,eol,start
 set smartcase
@@ -27,6 +28,7 @@ set expandtab
 set autoindent
 set fileformat=unix
 "set clipboard=unnamed
+" set splitbelow
 
 call plug#begin('~/.vim/plugged')
 
@@ -86,7 +88,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'
 
 " Debugger
-Plug 'puremourning/vimspector' 
+Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-python --enable-python'}
 
 " Git blame
 Plug 'APZelos/blamer.nvim'
@@ -112,15 +114,18 @@ Plug 'voldikss/vim-floaterm'
 " Colorize hexa colors
 Plug 'lilydjwg/colorizer'
 
+" Pytest
+Plug 'alfredodeza/pytest.vim'
+
 call plug#end()
 
 " General
 let mapleader = " "
 imap kj <Esc>
 tnoremap kj <C-\><C-n>
-tnoremap kjx <C-\><C-n> :FloatermToggle<CR>
-nnoremap <leader>qq :q<CR>
-nnoremap <leader>w :wa<CR>
+tnoremap kjq <C-\><C-n> :FloatermToggle<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>w :w<CR>
 " nnoremap <leader>wa :wa<CR>
 
 " Automatically enter insert mode when opening terminal
@@ -139,13 +144,12 @@ augroup start_obsession
     autocmd VimEnter * Obsession
 augroup END
 set statusline+=%{ObsessionStatus()}
-set splitbelow
 " Split management
-nnoremap ;j :belowright split<CR>
 " nnoremap ;j mz:new<CR>:b#<CR>`z:delm z<CR>
-nnoremap ;k :belowright split<CR>
-nnoremap ;l :vsplit<CR><C-w>l
-nnoremap ;h :vsplit<CR><C-w>l
+nnoremap <leader>sj :belowright split<CR>
+nnoremap <leader>sk :split<CR>
+nnoremap <leader>sl :vsplit<CR><C-w>l
+nnoremap <leader>sh :vsplit<CR>
 " Split navigation
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
@@ -196,7 +200,7 @@ set termguicolors
 
 
 " NERDTree
-nnoremap <leader>a :NERDTreeToggle<CR>
+nnoremap <nowait> <leader>a :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 " nnoremap <leader>n :NERDTreeFocus<CR>
 " nnoremap <C-n> :NERDTree<CR>
@@ -204,7 +208,7 @@ let NERDTreeShowHidden=1
 
 
 " FuzzyFinderS
-nnoremap <C-p> :GFiles<CR>
+" nnoremap <C-p> :GFiles<CR>
 " Project files
 nnoremap <leader>pf :Files<CR>
 " Quickfix list
@@ -250,6 +254,8 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <leader>ca  <Plug>(coc-codeaction)
+nmap <leader>cf  <Plug>(coc-fix-current)
 
 " Code formatting
 nnoremap <F3> :Autoformat<CR>
@@ -257,16 +263,17 @@ let g:autoformat_autoindent = 0
 let g:autoformat_retab = 0
 let g:autoformat_remove_trailing_spaces = 0
 
-" Tab navigation
-nnoremap <S-T>n :tabnew<CR>
+" Tab management and navigation
 nnoremap <S-T>T :tabnew<CR>
+nnoremap <S-T>q :tabclose<CR>
 nnoremap <S-H> :tabprev<CR>
-nnoremap <S-L> :tabnext<CR>
-" nnoremap <S-T>q :tabclose<CR>
+nnoremap <nowait> <S-L> :tabnext<CR>
+noremap <A-S-Left>  :-tabmove<cr>
+noremap <A-S-Right> :+tabmove<cr>
 
 " Telescope remapings
 " Find files using Telescope command-line sugar.
-nnoremap <leader>ff <cmd>Telescope find_files<CR>
+nnoremap <C-p> <cmd>Telescope find_files<CR>
 nnoremap <leader>fzf <cmd>Telescope live_grep<CR>
 nnoremap <leader>fb <cmd>Telescope buffers<CR>
 nnoremap <leader>fh <cmd>Telescope help_tags<CR>
@@ -299,13 +306,13 @@ nmap <leader>d_ :call vimspector#Restart()<CR>
 nmap <leader><F8> :call vimspector#ToggleBreakpoint()<CR>
 nnoremap <F9> :call vimspector#Continue()<CR>
 nnoremap <leader>dc :call vimspector#RunToCursor()<CR>
-nnoremap <leader>dx :call vimspector#Reset()<CR>
+nnoremap <leader>dq :call vimspector#Reset()<CR>
 
 " Copy current file path
 noremap <silent> <F4> :let @+=expand("%:p")<CR>
 
 " FloatTerm
-nnoremap <silent> <leader>t :FloatermToggle<CR>
+nnoremap <silent> <nowait> <leader>t :FloatermToggle<CR>
 
 " open last closed buffer
 function! OpenLastClosed()
@@ -330,6 +337,13 @@ function! OpenLastClosed()
 endfunction
 
 nnoremap <C-t> :call OpenLastClosed() <CR>
+
+" Pytest
+nmap <silent><Leader>pt <Esc>:Pytest file<CR>
+nmap <silent><Leader>c <Esc>:Pytest class<CR>
+nmap <silent><Leader>m <Esc>:Pytest method<CR>
+
+
 " -----------------------------------------------------------------------------------
 " After a quick list result, press enter and navigate quick list items with
 " above remaps.
